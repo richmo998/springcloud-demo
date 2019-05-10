@@ -1,0 +1,2 @@
+/config/sc-gateway,dev=zuul.routes.sc-service.path=/sc-service/**
+/config/sc-gateway,dev=zuul.routes.sc-service.serviceId=sc-service
