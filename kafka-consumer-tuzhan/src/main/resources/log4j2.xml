@@ -17,7 +17,7 @@
 
 		<!-- ${logFilePath} :项目路径 -->
 		<RollingFile name="RollingFileInfo" fileName="${logFilePath}/kafka-consumer-server.log"
-					 filePattern="${logFilePath}/$${date:yyyy-MM-dd}/front-cmp-server-%d{yyyy-MM-dd}-%i.log">
+					 filePattern="${logFilePath}/$${date:yyyy-MM-dd}/kafka-consumer-server-%d{yyyy-MM-dd}-%i.log">
 			<!--ThresholdFilter :日志输出过滤-->
 			<!--level="info" :日志级别,onMatch="ACCEPT" :级别在info之上则接受,onMismatch="DENY" :级别在info之下则拒绝-->
 			<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
@@ -32,6 +32,18 @@
 				<SizeBasedTriggeringPolicy size="2048 MB"/>
 			</Policies>
 			<!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
+			<DefaultRolloverStrategy max="24"/>
+		</RollingFile>
+
+		<!--	记录相关kafka接收到的消息	-->
+		<RollingFile name="RollingKafkaMsg"  fileName="${logFilePath}/kafka-msg.log"
+					 filePattern="${logFilePath}/$${date:yyyy-MM-dd}/kafka-msg-%d{yyyy-MM-dd}-%i.log">
+			<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+			<PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+				<SizeBasedTriggeringPolicy size="2048 MB"/>
+			</Policies>
 			<DefaultRolloverStrategy max="24"/>
 		</RollingFile>
 
@@ -65,9 +77,12 @@
 		</root>
 		<!--AsyncLogger :异步日志,LOG4J有三种日志模式,全异步日志,混合模式,同步日志,性能从高到底,线程越多效率越高,也可以避免日志卡死线程情况发生-->
 		<!--additivity="false" : additivity设置事件是否在root logger输出，为了避免重复输出，可以在Logger 标签下设置additivity为”false”-->
+<!--		<AsyncLogger name="AsyncLogger" level="info" includeLocation="true" additivity="false">-->
+<!--			<appender-ref ref="RollingFileInfo"/>-->
+<!--			<appender-ref ref="RollingFileError"/>-->
+<!--		</AsyncLogger>-->
 		<AsyncLogger name="AsyncLogger" level="info" includeLocation="true" additivity="false">
-			<appender-ref ref="RollingFileInfo"/>
-			<appender-ref ref="RollingFileError"/>
+			<appender-ref ref="RollingKafkaMsg"/>
 		</AsyncLogger>
 	</loggers>
 </configuration>
